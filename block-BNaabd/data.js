@@ -12,6 +12,7 @@ function handleRequest(req, res) {
 
   req.on("end", () => {
     if (req.method === "POST" && req.url === "/json") {
+      res.setHeader("Content-Type", "application/json");
       res.write(store);
       res.end();
     }
