@@ -16,6 +16,7 @@ function handleRequest(req, res) {
       fs.open(`${userDir}${username}.json`, "wx", (err, fd) => {
         if (err) {
           res.end("User already present");
+          return console.log(err);
         }
         fs.writeFile(fd, store, (err) => {
           fs.close(fd, (err) => {
@@ -23,16 +24,13 @@ function handleRequest(req, res) {
           });
         });
       });
-    }
-    if (req.method === "GET" && parsedUrl.pathname === "/users") {
+    } else if (req.method === "GET" && parsedUrl.pathname === "/users") {
       let user = parsedUrl.query.username;
       fs.readFile(`${userDir}${user}.json`, (err, user) => {
         res.setHeader("Content-Type", "application/json");
         res.end(user);
       });
-    }
-
-    if (req.method === "DELETE" && parsedUrl.pathname === "/users") {
+    } else if (req.method === "DELETE" && parsedUrl.pathname === "/users") {
       let user = parsedUrl.query.username;
       fs.unlink(`${userDir}${user}.json`, (err) => {
         if (err) {
@@ -40,9 +38,7 @@ function handleRequest(req, res) {
         }
         res.end(`${user} file is deleted`);
       });
-    }
-
-    if (req.method === "PUT" && parsedUrl.pathname === "/users") {
+    } else if (req.method === "PUT" && parsedUrl.pathname === "/users") {
       let user = parsedUrl.query.username;
       fs.open(`${userDir}${user}.json`, "r+", (err, fd) => {
         if (err) throw err;
@@ -54,6 +50,9 @@ function handleRequest(req, res) {
           });
         });
       });
+    } else {
+      res.statusCode = 404;
+      res.end("Page not found");
     }
   });
 }
